@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CORETEKS · Espacio de trabajo con IA privada</title>
+<meta name="description" content="Demo funcional de CORETEKS: chat con IA privada, correo inteligente, tareas, proyectos, agentes, conocimiento y memoria empresarial.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+<link rel="stylesheet" href="css/main.css">
+
+<style>
+  /* Estilos para bloquear la vista principal hasta que se loguee */
+  #loginOverlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  #loginOverlay iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    background: var(--bg);
+  }
+  #loginOverlay[hidden] {
+    display: none;
+  }
+</style>
+</head>
+
+<body>
+
+<!-- ⭐ PANTALLA DE LOGIN (Cubre todo) -->
+<div id="loginOverlay">
+  <iframe id="loginIframe" src="modulos_B/Login_Usuario/Login_Usuario.html" title="Iniciar Sesión"></iframe>
+</div>
+
+<!-- APP PRINCIPAL (Oculto al inicio) -->
+<div id="app" hidden>
+
+  <aside id="side" aria-label="Barra lateral">
+
+    <div class="sbrand">
+      <a class="logo"
+         data-module="configuracion"
+         role="button"
+         tabindex="0"
+         aria-label="Configuración"
+         data-tip="Configuración">
+        <i class="fas fa-cube"></i>
+      </a>
+    </div>
+
+    <nav id="snav" aria-label="Navegación principal">
+
+      <a data-module="chat" class="nv on" role="button" tabindex="0" aria-label="Chat IA · MÍA" data-tip="Chat IA · MÍA">
+        <i class="fas fa-comments"></i>
+      </a>
+
+      <a data-module="email" class="nv" role="button" tabindex="0" aria-label="Smart Email" data-tip="Smart Email">
+        <i class="fas fa-envelope"></i>
+      </a>
+
+      <a data-module="tareas" class="nv" role="button" tabindex="0" aria-label="Tareas" data-tip="Tareas">
+        <i class="fas fa-check-square"></i>
+      </a>
+
+      <a data-module="herramientas" class="nv" role="button" tabindex="0" aria-label="Herramientas" data-tip="Herramientas">
+        <i class="fas fa-th-large"></i>
+      </a>
+
+      <a data-module="proyectos" class="nv" role="button" tabindex="0" aria-label="Proyectos" data-tip="Proyectos">
+        <i class="fas fa-folder"></i>
+      </a>
+
+      <a data-module="agentes" class="nv" role="button" tabindex="0" aria-label="Mis agentes" data-tip="Mis agentes">
+        <i class="fas fa-users"></i>
+      </a>
+
+      <a data-module="archivos" class="nv" role="button" tabindex="0" aria-label="Mis archivos" data-tip="Mis archivos">
+        <i class="fas fa-file"></i>
+      </a>
+
+      <a data-module="conocimiento" class="nv" role="button" tabindex="0" aria-label="Conocimiento empresarial" data-tip="Conocimiento empresarial">
+        <i class="fas fa-database"></i>
+      </a>
+
+      <a data-module="learning" class="nv" role="button" tabindex="0" aria-label="Learning Center" data-tip="Learning Center">
+        <i class="fas fa-book"></i>
+      </a>
+
+      <hr>
+
+      <a data-module="memoria" class="nv" role="button" tabindex="0" aria-label="Memoria" data-tip="Memoria">
+        <i class="fas fa-layer-group"></i>
+      </a>
+
+      <a data-module="indicadores" class="nv" role="button" tabindex="0" aria-label="Indicadores" data-tip="Indicadores">
+        <i class="fas fa-chart-bar"></i>
+      </a>
+
+      <a data-module="ayuda" class="nv" role="button" tabindex="0" aria-label="Ayuda" data-tip="Ayuda">
+        <i class="fas fa-question-circle"></i>
+      </a>
+
+    </nav>
+
+    <div class="suser" id="suser"></div>
+
+  </aside>
+
+  <main id="main">
+
+    <header id="top">
+      <button class="ham" id="ham" aria-label="Abrir navegación" type="button"></button>
+
+      <div class="tsearch">
+        <span class="tsearch-ic">🔍</span>
+        <input class="tsearch-inp" id="tsearch" type="text" placeholder="Buscar en el espacio…" autocomplete="off" spellcheck="false">
+        <kbd class="tsearch-kbd">Ctrl K</kbd>
+      </div>
+
+      <div class="tright" id="tright"></div>
+    </header>
+
+    <div id="view">
+      <div id="moduleContainer"></div>
+
+      <div class="cargando" id="cargando" hidden>
+        <div class="spinner"></div>
+        <span>Cargando módulo…</span>
+      </div>
+    </div>
+
+  </main>
+
+  <div id="scrim"></div>
+
+</div>
+
+<div id="terminalOverlay" class="terminal-overlay" aria-hidden="true">
+  <iframe id="terminalIframe" class="terminal-iframe" title="Terminal de depuración"></iframe>
+</div>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<div id="modal" hidden>
+  <div class="mbox" role="dialog" aria-modal="true"></div>
+</div>
+
+<script src="js/main.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es" style="background:#07101F;height:100%;overflow:hidden">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CORETEKS · Asignación de Recursos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+<link rel="stylesheet" href="css/main.css">
+</head>
+<body class="modulo-usuarios-recursos">
+  <main id="view" tabindex="-1"></main>
+  <div id="toast" role="status" aria-live="polite"></div>
+  
+  <!-- Modal para Editar Recursos de un Usuario -->
+  <div id="modal" style="display:none; position:fixed; inset:0; background:rgba(3,8,16,.8); z-index:999; align-items:center; justify-content:center; padding:20px; backdrop-filter:blur(4px);">
+    <div style="background:var(--card); border:1px solid var(--line2); border-radius:14px; padding:24px; width:100%; max-width:440px; box-shadow:var(--sh);">
+      <h3 style="font-family:var(--disp); font-size:18px; font-weight:600; margin-bottom:16px;" id="modal-title">Editar Recursos</h3>
+      
+      <p class="lead" id="modal-desc" style="margin-bottom:20px; font-size:13px;"></p>
+
+      <div class="fld" style="margin-bottom:20px;">
+        <label>Perfil de Hardware asignado</label>
+        <select class="inp" id="f-rol">
+          <option value="estandar">Estándar (2 Hilos, 1GB RAM)</option>
+          <option value="admin">Administrador (6 Hilos, 4GB RAM)</option>
+          <option value="invitado">Invitado (1 Hilo, 512MB RAM)</option>
+        </select>
+        <small style="margin-top:6px; color:var(--dim); font-size:11px;">El cambio se aplicará la próxima vez que el usuario inicie sesión.</small>
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; gap:10px;">
+        <button class="btn outline" id="btn-cancel-modal">Cancelar</button>
+        <button class="btn p" id="btn-save-modal">Guardar Cambios</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

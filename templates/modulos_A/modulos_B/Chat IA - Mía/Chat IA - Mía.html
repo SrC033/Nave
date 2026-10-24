@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+<title>NAVE · Chat IA — NAVE</title>
+<meta name="description" content="Módulo de Chat IA de CORETEKS: MÍA, la asistente privada.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/main.css">
+<style>
+  /* Estilos del botón eliminar chat (círculo rojo con X) */
+  .hist-item-wrapper {
+    position: relative;
+    display: flex;
+    width: 100%;
+    flex: 0 0 auto;
+    align-items: center;
+  }
+  .hqb.hist-item {
+    margin-right: 0 !important;
+  }
+  .btn-eliminar-chat {
+    position: absolute;
+    top: 50%;
+    right: 6px;
+    transform: translateY(-50%);
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background-color: #F87171;
+    border: none;
+    cursor: pointer;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.15s ease, background-color 0.15s ease;
+    padding: 0;
+  }
+  .btn-eliminar-chat:hover {
+    transform: translateY(-50%) scale(1.15);
+    background-color: #EF4444;
+  }
+  .btn-eliminar-chat span {
+    font-size: 11px;
+    font-weight: 800;
+    color: #04161A;
+    line-height: 1;
+    display: block;
+  }
+  /* Modal para previsualizar archivos */
+  #modal-archivo {
+    position: fixed; inset: 0; z-index: 100;
+    background: rgba(3,8,16,0.85); backdrop-filter: blur(5px);
+    display: none; align-items: center; justify-content: center; padding: 20px;
+  }
+  #modal-archivo.activo { display: flex; }
+  .modal-archivo-content {
+    background: #0E1A2C; border: 1px solid rgba(125,150,195,0.3);
+    border-radius: 12px; width: 100%; max-width: 800px; max-height: 85vh;
+    display: flex; flex-direction: column; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  }
+  .modal-archivo-head {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 16px; border-bottom: 1px solid rgba(125,150,195,0.2);
+    font-family: monospace; font-size: 13px; color: var(--teal);
+  }
+  .modal-archivo-body {
+    padding: 16px; overflow: auto; font-family: Consolas, monospace;
+    font-size: 13px; line-height: 1.5; color: #EAF0FA; white-space: pre-wrap;
+  }
+  .modal-archivo-close {
+    background: none; border: none; color: #A3B3CD; cursor: pointer;
+    font-size: 20px; line-height: 1; padding: 0 5px;
+  }
+  .modal-archivo-close:hover { color: #fff; }
+
+  /* Estilo para el botón de modo activo en el grupo de relaciones */
+  .qab.activo {
+    border-color: var(--teal) !important;
+    background: rgba(45,212,191,.15) !important;
+    color: var(--white);
+  }
+  .qab.activo svg {
+    stroke: var(--teal);
+    filter: drop-shadow(0 0 10px rgba(45,212,191,.8));
+  }
+</style>
+</head>
+<body class="modulo-chat">
+
+  <main id="view" tabindex="-1">
+    <div class="fade">
+      <div class="chat-layout">
+
+        <!-- ============ COLUMNA IZQUIERDA ============ -->
+        <aside class="chat-side">
+          <div class="side-header">
+            <h1 class="mya-titulo">NAVE.IA</h1>
+          </div>
+
+          <div class="relations-block">
+            <span class="lbl">Grupo de relaciones</span>
+            <div class="relations-box">
+              
+              <!-- 1. CHAT NORMAL (ACTIVO POR DEFECTO) -->
+              <button class="qab activo" data-accion="chat" type="button" title="Chat Normal">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                <span class="tooltip-text">Chat Normal</span>
+              </button>
+              
+              <!-- 2. CREAR PDF -->
+              <button class="qab" data-accion="pdf" type="button" title="Crear PDF">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5z"/><path d="M14 2v6h6"/></svg>
+                <span class="tooltip-text">Crear PDF</span>
+              </button>
+              
+              <!-- 3. CREAR EXCEL -->
+              <button class="qab" data-accion="excel" type="button" title="Crear Excel">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+                <span class="tooltip-text">Crear Excel</span>
+              </button>
+
+              <!-- 4. CREAR DASHBOARD -->
+              <button class="qab" data-accion="dashboard" type="button" title="Crear Dashboard">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="5" height="16" rx="1.5"/><rect x="10" y="4" width="5" height="11" rx="1.5"/><rect x="17" y="4" width="4" height="14" rx="1.5"/></svg>
+                <span class="tooltip-text">Crear Dashboard</span>
+              </button>
+
+              <!-- 5. IMÁGENES -->
+              <button class="qab" data-accion="imagenes" type="button" title="Imágenes">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                <span class="tooltip-text">Imágenes</span>
+              </button>
+
+              <!-- 6. MI EMPRESA -->
+              <button class="qab" data-accion="empresa" type="button" title="Mi Empresa">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M9 8h2M13 8h2M9 12h2M13 12h2M9 16h6"/></svg>
+                <span class="tooltip-text">Mi Empresa</span>
+              </button>
+
+            </div>
+          </div>
+
+          <div class="history-block">
+            <div class="history-head">
+              <span class="lbl">Historial</span>
+              <div class="history-actions">
+                <button class="btn sm icon-only" id="bnueva" title="Nueva conversación" aria-label="Nueva conversación"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg></button>
+                <button class="btn sm icon-only" id="bvaciar" title="Vaciar chat actual" aria-label="Vaciar chat actual"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M10 11v6M14 11v6"/></svg></button>
+              </div>
+            </div>
+            <div class="historial" id="historial" role="list" aria-label="Historial de conversaciones"></div>
+          </div>
+        </aside>
+
+        <!-- ============ COLUMNA DERECHA: chat ============ -->
+        <div class="chat-main">
+          <div class="chatsc chatsc-vacio" id="chatsc">
+            <div id="hilo" class="hilo">
+              <div class="msg a bienvenida" id="bienvenida">
+                <div class="who"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9L12 3z"/></svg></div>
+                <div class="bub">
+                  <h1 class="saludo">¿Qué necesitás <em>resolver</em> hoy?</h1>
+                  <p class="saludo-sub">Tu espacio de trabajo con inteligencia artificial, con la información de tu empresa adentro.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="compw">
+            <div class="comp">
+              <div class="comp-chips" id="chips"></div>
+              <div class="mic-indicador" id="mic-indicador"><span class="ondas"><i></i><i></i><i></i><i></i><i></i></span><span>Escuchando… hablá ahora</span></div>
+              <div class="adjuntos" id="adjuntos"></div>
+
+              <textarea class="cinp" id="q" rows="1" placeholder="Pedile a MÍA lo que necesitás…"></textarea>
+              <div class="crow">
+                <button class="cib" id="bclip" title="Adjuntar archivo o imagen" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21.4 11.1l-9.2 9.2a5 5 0 0 1-7.1-7.1l9.2-9.2a3.5 3.5 0 0 1 5 5l-9.2 9.2a2 2 0 0 1-2.8-2.8l8.5-8.5"/></svg></button>
+                <button class="cib" id="bmic" title="Dictar" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4M8 22h8"/></svg></button>
+                <span class="cspacer"></span>
+                <div class="modelos-dropdown-wrapper" id="modelos-wrapper">
+                  <button type="button" class="btn-select-modelos" id="btn-toggle-modelos">
+                    <span id="lbl-modelos-seleccionados">Modelo Principal (1)</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                  </button>
+                  <div class="modelos-menu" id="menu-modelos" hidden></div>
+                </div>
+                <button class="csend" id="bsend" aria-label="Enviar" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 3 3 10.5l7 3 3 7L21 3z"/></svg></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modal para ver el contenido del archivo -->
+  <div id="modal-archivo">
+    <div class="modal-archivo-content">
+      <div class="modal-archivo-head">
+        <span id="modal-archivo-nombre">archivo.txt</span>
+        <button class="modal-archivo-close" id="modal-archivo-cerrar" title="Cerrar">&times;</button>
+      </div>
+      <div class="modal-archivo-body" id="modal-archivo-texto">Contenido del archivo...</div>
+    </div>
+  </div>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+  <div id="modal" hidden><div class="mbox" role="dialog" aria-modal="true"></div></div>
+
+  <!-- Input file oculto con accept abierto -->
+  <input type="file" id="input-archivo" accept="*/*" style="display:none">
+
+  <!-- 🚀 LIBRERÍA SHEETJS PARA PREVISUALIZAR EXCEL -->
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+  
+  <script src="js/main.js" defer></script>
+</body>
+</html>

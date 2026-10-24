@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+<title>NAVE.IA · Smart Email</title>
+<meta name="description" content="NAVE.IA Smart Email: conectá tu buzón y gestioná tus correos con IA.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/main.css">
+</head>
+<body class="modulo-email">
+
+  <main id="view" tabindex="-1">
+
+    <!-- CABECERA CENTRADA -->
+    <header class="ph">
+      <div class="brand">
+        <span class="brand-logo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 12h4l3-9 4 18 3-9h4"/>
+          </svg>
+        </span>
+        <h1>NAVE.IA</h1>
+        <span class="brand-pill">Smart Email</span>
+      </div>
+      <p class="sub">Conectá tu buzón y dejá que <b>NAVE.IA</b> organice, analice y prepare respuestas por vos.</p>
+      <div class="chips center" id="header-chips">
+        <span class="chip tl">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+          Conexión segura IMAP/SMTP
+        </span>
+        <span class="chip tl">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+          Solo vos ves tus buzones
+        </span>
+        <span class="chip vi">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="7" y="7" width="10" height="10" rx="2"/><path d="M4 10h3M4 14h3M17 10h3M17 14h3M10 4v3M14 4v3M10 17v3M14 17v3"/></svg>
+          Procesado por NAVE.IA
+        </span>
+      </div>
+    </header>
+
+    <!-- TABS Y BOTÓN CONECTAR -->
+    <nav class="setabs center" role="tablist" id="main-tabs">
+      <button class="setab on" data-tab="buzones">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+        Buzones <span class="cnt" id="tab-count-buzones">0</span>
+      </button>
+      <button class="setab btn-analisis" data-tab="analisis">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 6v6l4 2"/></svg>
+        Análisis.IA
+      </button>
+      <button class="btn p connect-btn" id="btn-conectar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+        Conectar buzón
+      </button>
+    </nav>
+
+    <!-- VISTA: BUZONES -->
+    <section id="view-buzones" class="view-section">
+      
+      <!-- Pantalla de Lista de Cuentas -->
+      <div id="bz-pantalla">
+        <div class="note tl bznota">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+          <div>Tocá una cuenta para ver sus correos.</div>
+        </div>
+        
+        <div id="bzwrap" class="bzlist"></div>
+        
+        <p class="bzpie center">Las credenciales se guardan de forma local y segura en tu equipo.</p>
+      </div>
+
+      <!-- Pantalla de Correos del Buzón Seleccionado -->
+      <div id="bz-correos" hidden>
+        
+        <!-- Cabecera del buzón con botón de Nuevo Correo -->
+        <div class="corte-head">
+          <div class="corte-head-left">
+            <span class="corte-titulo" id="corte-titulo-buzon"></span>
+          </div>
+          <button class="btn p" id="btn-nuevo-correo" title="Nuevo correo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+            Nuevo correo
+          </button>
+        </div>
+
+        <!-- El Split contiene la columna con el scroll y el panel de respuesta -->
+        <div class="split open">
+          
+          <div class="stack">
+            <div class="tabs" id="corte-tabs">
+              <button class="tab on" data-cf="pend">Pendientes (<span id="count-pend">0</span>)</button>
+              <button class="tab" data-cf="recibidos">Recibidos (<span id="count-recibidos">0</span>)</button>
+              <button class="tab" data-cf="enviados">Enviados (<span id="count-enviados">0</span>)</button>
+            </div>
+            
+            <!-- Contenedor con Scroll Interno Solo para los Correos -->
+            <div class="correos-scroll">
+              <div id="correos-list">
+                <div class="empty">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                  Cargando correos...
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Panel de Respuesta (Chat inferior) -->
+          <aside id="panel-correo" class="panel" hidden></aside>
+          
+        </div>
+
+        <!-- Botón de HTML para el modo de escritura de correos nuevos -->
+        <div class="editor-html-toggle">
+          <button class="btn gh" id="btn-toggle-html">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+            Enviado en HTML
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- VISTA: ANÁLISIS.IA -->
+    <section id="view-analisis" class="view-section" hidden>
+      <div class="empty">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 6v6l4 2"/></svg>
+        Análisis.IA estará disponible próximamente.
+      </div>
+    </section>
+
+  </main>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <div id="modal" hidden>
+    <div class="mbox" role="dialog" aria-modal="true"></div>
+  </div>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

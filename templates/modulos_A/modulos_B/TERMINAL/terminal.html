@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terminal de Depuración</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+            background: #050509;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 12px;
+            color: #e2e8f0;
+        }
+
+        /* ============================================================
+           🔥 FONDO BASE
+           ============================================================ */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse at 50% 50%, rgba(239, 68, 68, 0.06), transparent 60%),
+                radial-gradient(ellipse at 20% 20%, rgba(239, 68, 68, 0.04), transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(239, 68, 68, 0.04), transparent 50%),
+                #050509;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ============================================================
+           🔥 GRID TECNOLÓGICO
+           ============================================================ */
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(239, 68, 68, 0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(239, 68, 68, 0.025) 1px, transparent 1px);
+            background-size: 50px 50px;
+            mask-image: radial-gradient(ellipse at center, #000 20%, transparent 80%);
+            -webkit-mask-image: radial-gradient(ellipse at center, #000 20%, transparent 80%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ============================================================
+           🔥 LENTES DE FONDO (FULLSCREEN)
+           ============================================================ */
+        #terminal-bg-lenses {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .lens {
+            position: absolute;
+            border-radius: 50%;
+            border: 1.5px solid rgba(239, 68, 68, 0.12);
+            box-shadow:
+                0 0 30px rgba(239, 68, 68, 0.08),
+                inset 0 0 30px rgba(239, 68, 68, 0.04);
+            animation: lensFloat 24s ease-in-out infinite;
+        }
+
+        .lens::before {
+            content: '';
+            position: absolute;
+            inset: 12px;
+            border-radius: 50%;
+            border: 1px solid rgba(239, 68, 68, 0.08);
+            animation: lensInnerSpin 20s linear infinite;
+        }
+
+        .lens::after {
+            content: '';
+            position: absolute;
+            inset: 24px;
+            border-radius: 50%;
+            border: 1px dashed rgba(239, 68, 68, 0.05);
+            animation: lensInnerSpin 30s linear infinite reverse;
+        }
+
+        @keyframes lensFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.7; }
+            25%      { transform: translate(15px, -12px) scale(1.03); opacity: 0.85; }
+            50%      { transform: translate(-8px, 15px) scale(0.97); opacity: 0.6; }
+            75%      { transform: translate(12px, 8px) scale(1.04); opacity: 0.8; }
+        }
+
+        @keyframes lensInnerSpin {
+            to { transform: rotate(360deg); }
+        }
+
+        .lens-1 {
+            width: 500px; height: 500px;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            animation-duration: 30s;
+            border-color: rgba(239, 68, 68, 0.08);
+        }
+        .lens-2 {
+            width: 380px; height: 380px;
+            top: -120px; left: -120px;
+            animation-delay: -6s;
+        }
+        .lens-3 {
+            width: 420px; height: 420px;
+            bottom: -140px; right: -140px;
+            animation-delay: -12s;
+        }
+        .lens-4 {
+            width: 280px; height: 280px;
+            top: 10%; right: 12%;
+            animation-delay: -8s;
+        }
+        .lens-5 {
+            width: 320px; height: 320px;
+            bottom: 8%; left: 10%;
+            animation-delay: -15s;
+        }
+        .lens-6 {
+            width: 200px; height: 200px;
+            top: 15%; left: 40%;
+            animation-delay: -4s;
+        }
+        .lens-7 {
+            width: 180px; height: 180px;
+            bottom: 20%; right: 30%;
+            animation-delay: -18s;
+        }
+
+        /* ============================================================
+           🔥 LETRAS "CY" DE FONDO
+           ============================================================ */
+        #terminal-bg-letters {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .cy-main {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-weight: 900;
+            font-size: 700px;
+            line-height: 1;
+            color: transparent;
+            -webkit-text-stroke: 1.5px rgba(239, 68, 68, 0.08);
+            letter-spacing: -0.08em;
+            user-select: none;
+            white-space: nowrap;
+            animation: cyMainPulse 8s ease-in-out infinite;
+            z-index: 0;
+        }
+
+        @keyframes cyMainPulse {
+            0%, 100% {
+                opacity: 0.5;
+                -webkit-text-stroke: 1.5px rgba(239, 68, 68, 0.06);
+            }
+            50% {
+                opacity: 1;
+                -webkit-text-stroke: 1.5px rgba(239, 68, 68, 0.14);
+            }
+        }
+
+        .cy-small {
+            position: absolute;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-weight: 900;
+            font-size: 80px;
+            color: transparent;
+            -webkit-text-stroke: 1px rgba(239, 68, 68, 0.06);
+            user-select: none;
+            animation: cyFloat 18s ease-in-out infinite;
+            letter-spacing: -0.05em;
+        }
+
+        .cy-small-1 { top: 8%; left: 6%; font-size: 100px; }
+        .cy-small-2 { top: 75%; left: 82%; animation-delay: -3s; font-size: 90px; }
+        .cy-small-3 { top: 18%; right: 8%; animation-delay: -6s; font-size: 85px; }
+        .cy-small-4 { bottom: 12%; left: 12%; animation-delay: -9s; font-size: 95px; }
+        .cy-small-5 { top: 55%; right: 5%; animation-delay: -12s; font-size: 75px; }
+        .cy-small-6 { bottom: 30%; right: 25%; animation-delay: -5s; font-size: 70px; }
+        .cy-small-7 { top: 35%; left: 3%; animation-delay: -8s; font-size: 80px; }
+        .cy-small-8 { top: 3%; right: 35%; animation-delay: -11s; font-size: 65px; }
+
+        @keyframes cyFloat {
+            0%, 100% {
+                transform: translate(0, 0) scale(1);
+                opacity: 0.4;
+                -webkit-text-stroke: 1px rgba(239, 68, 68, 0.05);
+            }
+            50% {
+                transform: translate(8px, -8px) scale(1.08);
+                opacity: 0.8;
+                -webkit-text-stroke: 1px rgba(239, 68, 68, 0.1);
+            }
+        }
+
+        /* ============================================================
+           🔥 EFECTOS DE ESCANEO
+           ============================================================ */
+        #terminal-scanline {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 2;
+            background: linear-gradient(to bottom, transparent 50%, rgba(239, 68, 68, 0.015) 50%);
+            background-size: 100% 4px;
+            opacity: 0.6;
+            animation: scanlineMove 12s linear infinite;
+        }
+
+        @keyframes scanlineMove {
+            0%   { background-position: 0 0; }
+            100% { background-position: 0 100px; }
+        }
+
+        #terminal-scanbar {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 1.5px;
+            background: linear-gradient(90deg,
+                transparent 0%,
+                rgba(239, 68, 68, 0.3) 20%,
+                rgba(239, 68, 68, 0.7) 50%,
+                rgba(239, 68, 68, 0.3) 80%,
+                transparent 100%
+            );
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+            animation: scanbarMove 8s linear infinite;
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        @keyframes scanbarMove {
+            0%   { top: -2px; opacity: 0; }
+            10%  { opacity: 0.8; }
+            90%  { opacity: 0.8; }
+            100% { top: 100%; opacity: 0; }
+        }
+
+        /* ============================================================
+           WRAPPER PRINCIPAL
+           ============================================================ */
+        #terminal-wrapper {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* ============================================================
+           HEADER
+           ============================================================ */
+        #terminal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 6px 14px;
+            background: linear-gradient(90deg,
+                rgba(18, 18, 26, 0.92) 0%,
+                rgba(28, 28, 40, 0.92) 100%);
+            border-bottom: 1px solid rgba(239, 68, 68, 0.5);
+            flex-shrink: 0;
+            user-select: none;
+            backdrop-filter: blur(16px) saturate(150%);
+            -webkit-backdrop-filter: blur(16px) saturate(150%);
+            position: relative;
+            z-index: 20;
+            box-shadow: 0 4px 25px rgba(239, 68, 68, 0.12);
+            gap: 12px;
+        }
+
+        /* 🔥 HEADER LEFT: LENTES + EMBLEMA + TÍTULO */
+        #terminal-header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+
+        /* ============================================================
+           🔥 LENTES PEQUEÑOS AL LADO DEL EMBLEMA
+           ============================================================ */
+        #header-lenses {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+
+        .header-lens {
+            position: relative;
+            border-radius: 50%;
+            border: 1.5px solid rgba(239, 68, 68, 0.35);
+            background: radial-gradient(circle at 30% 30%, rgba(239, 68, 68, 0.08), transparent 70%);
+            box-shadow:
+                0 0 10px rgba(239, 68, 68, 0.2),
+                inset 0 0 8px rgba(239, 68, 68, 0.1);
+            animation: headerLensFloat 4s ease-in-out infinite;
+            flex-shrink: 0;
+        }
+
+        .header-lens::before {
+            content: '';
+            position: absolute;
+            inset: 3px;
+            border-radius: 50%;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            animation: headerLensSpin 6s linear infinite;
+        }
+
+        .header-lens::after {
+            content: '';
+            position: absolute;
+            inset: 5px;
+            border-radius: 50%;
+            border: 1px dashed rgba(239, 68, 68, 0.15);
+            animation: headerLensSpin 8s linear infinite reverse;
+        }
+
+        @keyframes headerLensFloat {
+            0%, 100% {
+                transform: scale(1) translateY(0);
+                box-shadow:
+                    0 0 10px rgba(239, 68, 68, 0.2),
+                    inset 0 0 8px rgba(239, 68, 68, 0.1);
+            }
+            50% {
+                transform: scale(1.08) translateY(-2px);
+                box-shadow:
+                    0 0 18px rgba(239, 68, 68, 0.35),
+                    inset 0 0 12px rgba(239, 68, 68, 0.15);
+            }
+        }
+
+        @keyframes headerLensSpin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Lente grande del header */
+        .header-lens-1 {
+            width: 34px;
+            height: 34px;
+            animation-delay: 0s;
+        }
+
+        /* Lente mediano del header */
+        .header-lens-2 {
+            width: 26px;
+            height: 26px;
+            animation-delay: -1s;
+        }
+
+        /* Lente pequeño del header */
+        .header-lens-3 {
+            width: 18px;
+            height: 18px;
+            animation-delay: -2s;
+        }
+
+        /* ============================================================
+           🔥 EMBLEMA CY
+           ============================================================ */
+        #terminal-emblem {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            position: relative;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(239, 68, 68, 0.2), rgba(239, 68, 68, 0.05) 70%);
+            border: 1.5px solid rgba(239, 68, 68, 0.4);
+            box-shadow:
+                0 0 15px rgba(239, 68, 68, 0.3),
+                inset 0 0 15px rgba(239, 68, 68, 0.1);
+            overflow: hidden;
+        }
+
+        #terminal-emblem::before {
+            content: '';
+            position: absolute;
+            inset: -50%;
+            background: conic-gradient(
+                from 0deg,
+                transparent,
+                rgba(239, 68, 68, 0.4),
+                transparent,
+                rgba(239, 68, 68, 0.4),
+                transparent
+            );
+            animation: emblemRotate 6s linear infinite;
+            z-index: 0;
+        }
+
+        @keyframes emblemRotate {
+            to { transform: rotate(360deg); }
+        }
+
+        #terminal-emblem::after {
+            content: '';
+            position: absolute;
+            inset: 3px;
+            border-radius: 50%;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            z-index: 1;
+        }
+
+        #terminal-emblem .emblem-text {
+            position: relative;
+            z-index: 2;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-weight: 900;
+            font-size: 14px;
+            letter-spacing: -1px;
+            color: #ef4444;
+            text-shadow:
+                0 0 10px rgba(239, 68, 68, 0.8),
+                0 0 20px rgba(239, 68, 68, 0.5);
+            animation: emblemTextPulse 2s ease-in-out infinite;
+            background: radial-gradient(circle, rgba(239, 68, 68, 0.2), transparent 70%);
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        @keyframes emblemTextPulse {
+            0%, 100% {
+                text-shadow:
+                    0 0 10px rgba(239, 68, 68, 0.8),
+                    0 0 20px rgba(239, 68, 68, 0.5);
+                transform: scale(1);
+            }
+            50% {
+                text-shadow:
+                    0 0 15px rgba(239, 68, 68, 1),
+                    0 0 30px rgba(239, 68, 68, 0.8),
+                    0 0 45px rgba(239, 68, 68, 0.5);
+                transform: scale(1.05);
+            }
+        }
+
+        /* ============================================================
+           TÍTULO
+           ============================================================ */
+        #terminal-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #ef4444;
+            font-weight: 700;
+            font-size: 12px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            text-shadow: 0 0 12px rgba(239, 68, 68, 0.5);
+            flex-shrink: 0;
+        }
+
+        #terminal-title .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ef4444;
+            box-shadow: 0 0 10px #ef4444;
+            animation: dotPulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes dotPulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.3; transform: scale(0.8); }
+        }
+
+        #terminal-count {
+            color: #64748b;
+            font-weight: 400;
+            font-size: 10px;
+        }
+
+        /* ============================================================
+           CONTROLES
+           ============================================================ */
+        #terminal-controls {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .dev-btn {
+            background: rgba(28, 28, 40, 0.7);
+            border: 1px solid #334155;
+            color: #94a3b8;
+            padding: 4px 10px;
+            border-radius: 5px;
+            font-size: 10px;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+            outline: none;
+            backdrop-filter: blur(4px);
+        }
+
+        .dev-btn:hover {
+            background: #ef4444;
+            border-color: #ef4444;
+            color: #ffffff;
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+        }
+
+        .dev-btn.active {
+            background: #ef4444;
+            border-color: #ef4444;
+            color: #ffffff;
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+        }
+
+        .dev-btn.danger:hover {
+            background: #dc2626;
+            border-color: #dc2626;
+        }
+
+        .dev-btn.close-btn {
+            background: #7f1d1d;
+            border-color: #991b1b;
+            color: #fecaca;
+        }
+
+        .dev-btn.close-btn:hover {
+            background: #dc2626;
+            border-color: #dc2626;
+            color: #ffffff;
+        }
+
+        /* ============================================================
+           BODY
+           ============================================================ */
+        #terminal-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px 12px;
+            background: rgba(5, 5, 9, 0.72);
+            scrollbar-width: thin;
+            scrollbar-color: #ef4444 #0a0a0f;
+            position: relative;
+            z-index: 10;
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+        }
+
+        #terminal-body::-webkit-scrollbar { width: 10px; }
+        #terminal-body::-webkit-scrollbar-track { background: #0a0a0f; }
+        #terminal-body::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #ef4444, #991b1b);
+            border-radius: 5px;
+        }
+        #terminal-body::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, #f87171, #b91c1c);
+        }
+
+        /* ============================================================
+           LINEAS DE LOG
+           ============================================================ */
+        .log-line {
+            display: flex;
+            gap: 8px;
+            padding: 3px 4px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            word-wrap: break-word;
+            word-break: break-all;
+            white-space: pre-wrap;
+            line-height: 1.4;
+            border-radius: 3px;
+            animation: logSlideIn 0.2s ease-out;
+        }
+
+        @keyframes logSlideIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to   { opacity: 1; transform: translateX(0); }
+        }
+
+        .log-line:hover {
+            background: rgba(239, 68, 68, 0.06);
+        }
+
+        .log-time {
+            color: #475569;
+            flex-shrink: 0;
+            font-size: 10px;
+            padding-top: 1px;
+        }
+
+        .log-source {
+            color: #f59e0b;
+            flex-shrink: 0;
+            font-size: 10px;
+            font-weight: 600;
+            min-width: 90px;
+            padding-top: 1px;
+        }
+
+        .log-msg {
+            color: #e2e8f0;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .log-line.log-error .log-msg { color: #f87171; }
+        .log-line.log-error .log-source { color: #ef4444; }
+        .log-line.log-error { border-left: 2px solid #ef4444; }
+
+        .log-line.log-warn .log-msg { color: #fbbf24; }
+        .log-line.log-warn .log-source { color: #f59e0b; }
+        .log-line.log-warn { border-left: 2px solid #f59e0b; }
+
+        .log-line.log-info .log-msg { color: #93c5fd; }
+        .log-line.log-info .log-source { color: #3b82f6; }
+
+        .log-line.log-network .log-msg { color: #c4b5fd; }
+        .log-line.log-network .log-source { color: #8b5cf6; }
+
+        .log-line.log-success .log-msg { color: #86efac; }
+        .log-line.log-success .log-source { color: #22c55e; }
+        .log-line.log-success { border-left: 2px solid #22c55e; }
+
+        .log-line.log-system .log-msg { color: #67e8f9; }
+        .log-line.log-system .log-source { color: #06b6d4; }
+
+        /* ============================================================
+           EMPTY STATE
+           ============================================================ */
+        #terminal-empty {
+            padding: 30px 20px;
+            text-align: center;
+            color: #475569;
+            font-size: 11px;
+            line-height: 1.8;
+            position: relative;
+            z-index: 15;
+        }
+
+        #terminal-empty .hint {
+            color: #ef4444;
+            font-weight: 600;
+            text-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+        }
+
+        /* ============================================================
+           FOOTER
+           ============================================================ */
+        #terminal-footer {
+            flex-shrink: 0;
+            padding: 6px 14px;
+            background: rgba(10, 10, 15, 0.92);
+            border-top: 1px solid rgba(28, 28, 40, 0.9);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 10px;
+            color: #475569;
+            backdrop-filter: blur(16px) saturate(150%);
+            -webkit-backdrop-filter: blur(16px) saturate(150%);
+            position: relative;
+            z-index: 20;
+        }
+
+        #terminal-footer .shortcut {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        #terminal-footer kbd {
+            background: #1c1c28;
+            border: 1px solid #334155;
+            border-radius: 3px;
+            padding: 1px 5px;
+            font-family: inherit;
+            font-size: 9px;
+            color: #94a3b8;
+            font-weight: 600;
+        }
+
+        .filter-active {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            color: #ef4444;
+            font-weight: 600;
+            text-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+        }
+
+        /* ============================================================
+           RESPONSIVE
+           ============================================================ */
+        @media (max-width: 1024px) {
+            .header-lens-1 { width: 30px; height: 30px; }
+            .header-lens-2 { width: 22px; height: 22px; }
+            .header-lens-3 { width: 16px; height: 16px; }
+            #terminal-emblem { width: 38px; height: 38px; }
+            #terminal-emblem .emblem-text { font-size: 13px; }
+        }
+
+        @media (max-width: 768px) {
+            #header-lenses { gap: 4px; }
+            .header-lens-1 { width: 26px; height: 26px; }
+            .header-lens-2 { width: 20px; height: 20px; }
+            .header-lens-3 { width: 14px; height: 14px; }
+            #terminal-emblem { width: 34px; height: 34px; }
+            #terminal-emblem .emblem-text { font-size: 12px; }
+            #terminal-title { font-size: 10px; }
+            .dev-btn { font-size: 9px; padding: 3px 7px; }
+        }
+
+        @media (max-width: 600px) {
+            /* Ocultar lentes en pantallas muy pequeñas */
+            #header-lenses { display: none; }
+        }
+
+        @media (max-width: 480px) {
+            #terminal-emblem { width: 30px; height: 30px; }
+            #terminal-emblem .emblem-text { font-size: 10px; }
+            #terminal-title { font-size: 9px; letter-spacing: 0.5px; }
+            #terminal-count { font-size: 9px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 🔥 FONDO: LETRAS "CY" -->
+    <div id="terminal-bg-letters">
+        <div class="cy-main">CY</div>
+        <div class="cy-small cy-small-1">CY</div>
+        <div class="cy-small cy-small-2">CY</div>
+        <div class="cy-small cy-small-3">CY</div>
+        <div class="cy-small cy-small-4">CY</div>
+        <div class="cy-small cy-small-5">CY</div>
+        <div class="cy-small cy-small-6">CY</div>
+        <div class="cy-small cy-small-7">CY</div>
+        <div class="cy-small cy-small-8">CY</div>
+    </div>
+
+    <!-- 🔥 FONDO: LENTES GRANDES -->
+    <div id="terminal-bg-lenses">
+        <div class="lens lens-1"></div>
+        <div class="lens lens-2"></div>
+        <div class="lens lens-3"></div>
+        <div class="lens lens-4"></div>
+        <div class="lens lens-5"></div>
+        <div class="lens lens-6"></div>
+        <div class="lens lens-7"></div>
+    </div>
+
+    <!-- 🔥 EFECTOS DE ESCANEO -->
+    <div id="terminal-scanline"></div>
+    <div id="terminal-scanbar"></div>
+
+    <!-- 🔥 CONTENIDO PRINCIPAL -->
+    <div id="terminal-wrapper">
+
+        <!-- ===== HEADER CON LENTES + EMBLEMA + TÍTULO ===== -->
+        <div id="terminal-header">
+            
+            <div id="terminal-header-left">
+                
+                <!-- 🔥 LENTES PEQUEÑOS AL LADO DEL EMBLEMA -->
+                <div id="header-lenses">
+                    <div class="header-lens header-lens-1"></div>
+                    <div class="header-lens header-lens-2"></div>
+                    <div class="header-lens header-lens-3"></div>
+                </div>
+                
+                <!-- EMBLEMA CY -->
+                <div id="terminal-emblem">
+                    <span class="emblem-text">CY</span>
+                </div>
+                
+                <!-- TÍTULO -->
+                <div id="terminal-title">
+                    <span class="dot"></span>
+                    <span>TERMINAL DE DEPURACIÓN</span>
+                    <span id="terminal-count">[0]</span>
+                </div>
+            </div>
+
+            <!-- CONTROLES -->
+            <div id="terminal-controls">
+                <button class="dev-btn active" data-filter="all" onclick="filterTerminal('all')">TODO</button>
+                <button class="dev-btn" data-filter="error" onclick="filterTerminal('error')">ERRORES</button>
+                <button class="dev-btn" data-filter="warn" onclick="filterTerminal('warn')">WARN</button>
+                <button class="dev-btn" data-filter="network" onclick="filterTerminal('network')">RED</button>
+                <button class="dev-btn" data-filter="info" onclick="filterTerminal('info')">INFO</button>
+                <button class="dev-btn" onclick="copyTerminalLogs()">📋 COPIAR</button>
+                <button class="dev-btn danger" onclick="clearTerminalLogs()">🗑 LIMPIAR</button>
+                <button class="dev-btn close-btn" onclick="closeTerminal()">✕ CERRAR</button>
+            </div>
+        </div>
+
+        <!-- ===== BODY ===== -->
+        <div id="terminal-body">
+            <div id="terminal-empty">
+                <div>Esperando eventos del sistema...</div>
+                <div class="hint">Los logs de consola, red y errores aparecerán aquí</div>
+                <div style="margin-top:20px;font-size:10px;">Presiona <kbd style="background:#1c1c28;border:1px solid #334155;border-radius:3px;padding:1px 5px;color:#94a3b8;">Ctrl</kbd> + <kbd style="background:#1c1c28;border:1px solid #334155;border-radius:3px;padding:1px 5px;color:#94a3b8;">C</kbd> + <kbd style="background:#1c1c28;border:1px solid #334155;border-radius:3px;padding:1px 5px;color:#94a3b8;">F12</kbd> para cerrar</div>
+            </div>
+        </div>
+
+        <!-- ===== FOOTER ===== -->
+        <div id="terminal-footer">
+            <div id="terminal-filter-info">
+                <span class="filter-active">Filtro: <span id="current-filter">TODO</span></span>
+            </div>
+            <div>
+                <span class="shortcut">
+                    <kbd>Ctrl</kbd>+<kbd>C</kbd>+<kbd>F12</kbd> cerrar · <kbd>Ctrl</kbd>+<kbd>L</kbd> limpiar
+                </span>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // ============================================================
+        // ESTADO
+        // ============================================================
+        const terminalLogs = [];
+        let terminalFilter = 'all';
+        const MAX_LOGS = 2000;
+
+        // ============================================================
+        // UTILIDADES
+        // ============================================================
+        function getTimestamp() {
+            const now = new Date();
+            const h = String(now.getHours()).padStart(2, '0');
+            const m = String(now.getMinutes()).padStart(2, '0');
+            const s = String(now.getSeconds()).padStart(2, '0');
+            const ms = String(now.getMilliseconds()).padStart(3, '0');
+            return `${h}:${m}:${s}.${ms}`;
+        }
+
+        function escapeHtml(str) {
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function formatArg(arg) {
+            if (arg === null) return 'null';
+            if (arg === undefined) return 'undefined';
+            if (typeof arg === 'object') {
+                try {
+                    return JSON.stringify(arg, null, 2);
+                } catch (e) {
+                    return String(arg);
+                }
+            }
+            return String(arg);
+        }
+
+        // ============================================================
+        // API PUBLICA
+        // ============================================================
+        function addLog(type, source, message) {
+            const log = {
+                type: type,
+                source: source,
+                message: message,
+                time: getTimestamp(),
+                timestamp: Date.now()
+            };
+            terminalLogs.push(log);
+
+            while (terminalLogs.length > MAX_LOGS) {
+                terminalLogs.shift();
+            }
+
+            renderLog(log);
+            updateCount();
+        }
+
+        function renderLog(log) {
+            if (terminalFilter !== 'all' && log.type !== terminalFilter) return;
+
+            const body = document.getElementById('terminal-body');
+            const empty = document.getElementById('terminal-empty');
+            if (empty) empty.remove();
+
+            const line = document.createElement('div');
+            line.className = `log-line log-${log.type}`;
+            line.dataset.type = log.type;
+            line.innerHTML = `
+                <span class="log-time">${escapeHtml(log.time)}</span>
+                <span class="log-source">[${escapeHtml(log.source)}]</span>
+                <span class="log-msg">${escapeHtml(log.message)}</span>
+            `;
+            body.appendChild(line);
+
+            const isAtBottom = body.scrollHeight - body.scrollTop - body.clientHeight < 80;
+            if (isAtBottom) {
+                body.scrollTop = body.scrollHeight;
+            }
+
+            while (body.children.length > MAX_LOGS) {
+                body.removeChild(body.firstChild);
+            }
+        }
+
+        function updateCount() {
+            const countEl = document.getElementById('terminal-count');
+            if (countEl) {
+                countEl.textContent = `[${terminalLogs.length}]`;
+            }
+        }
+
+        function filterTerminal(filter) {
+            terminalFilter = filter;
+            document.querySelectorAll('.dev-btn[data-filter]').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.filter === filter);
+            });
+
+            const filterEl = document.getElementById('current-filter');
+            if (filterEl) {
+                filterEl.textContent = filter.toUpperCase();
+            }
+
+            rerenderTerminal();
+        }
+
+        function rerenderTerminal() {
+            const body = document.getElementById('terminal-body');
+            if (!body) return;
+            body.innerHTML = '';
+
+            let count = 0;
+            terminalLogs.forEach(log => {
+                if (terminalFilter === 'all' || log.type === terminalFilter) {
+                    const line = document.createElement('div');
+                    line.className = `log-line log-${log.type}`;
+                    line.innerHTML = `
+                        <span class="log-time">${escapeHtml(log.time)}</span>
+                        <span class="log-source">[${escapeHtml(log.source)}]</span>
+                        <span class="log-msg">${escapeHtml(log.message)}</span>
+                    `;
+                    body.appendChild(line);
+                    count++;
+                }
+            });
+
+            if (count === 0) {
+                body.innerHTML = `
+                    <div id="terminal-empty">
+                        <div>No hay logs con el filtro: <span class="hint">${terminalFilter.toUpperCase()}</span></div>
+                    </div>
+                `;
+            }
+
+            body.scrollTop = body.scrollHeight;
+        }
+
+        function copyTerminalLogs() {
+            const lines = terminalLogs
+                .filter(l => terminalFilter === 'all' || l.type === terminalFilter)
+                .map(l => `${l.time} [${l.source}] [${l.type.toUpperCase()}] ${l.message}`);
+            const text = lines.join('\n');
+
+            const onSuccess = () => {
+                addLog('success', 'SYS', `Copiado al portapapeles (${lines.length} líneas)`);
+            };
+
+            const onError = () => {
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                document.body.appendChild(ta);
+                ta.select();
+                try {
+                    document.execCommand('copy');
+                    onSuccess();
+                } catch (e) {
+                    addLog('error', 'SYS', 'No se pudo copiar');
+                }
+                document.body.removeChild(ta);
+            };
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(onSuccess).catch(onError);
+            } else {
+                onError();
+            }
+        }
+
+        function clearTerminalLogs() {
+            terminalLogs.length = 0;
+            const body = document.getElementById('terminal-body');
+            body.innerHTML = `
+                <div id="terminal-empty">
+                    <div>Terminal limpiada</div>
+                    <div class="hint">Esperando nuevos eventos...</div>
+                </div>
+            `;
+            updateCount();
+
+            notifyParent({ type: 'TERMINAL_CLEARED' });
+        }
+
+        function closeTerminal() {
+            notifyParent({ type: 'CLOSE_TERMINAL' });
+        }
+
+        function notifyParent(data) {
+            try {
+                if (window.parent && window.parent !== window) {
+                    window.parent.postMessage(data, '*');
+                }
+            } catch (e) {}
+        }
+
+        // ============================================================
+        // RECIBIR MENSAJES DEL PADRE
+        // ============================================================
+        window.addEventListener('message', (event) => {
+            const data = event.data;
+            if (!data) return;
+
+            switch (data.type) {
+                case 'ADD_LOG':
+                    addLog(data.level || 'info', data.source || 'SYS', data.message || '');
+                    break;
+
+                case 'CLEAR_LOGS':
+                    clearTerminalLogs();
+                    break;
+
+                case 'FILTER':
+                    filterTerminal(data.filter || 'all');
+                    break;
+
+                case 'PING':
+                    notifyParent({ type: 'TERMINAL_READY' });
+                    break;
+
+                default:
+                    break;
+            }
+        });
+
+        // ============================================================
+        // ATAJOS DE TECLADO LOCALES
+        // ============================================================
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && (e.key === 'l' || e.key === 'L')) {
+                e.preventDefault();
+                clearTerminalLogs();
+                return false;
+            }
+        });
+
+        // ============================================================
+        // INICIALIZACION
+        // ============================================================
+        window.addEventListener('DOMContentLoaded', () => {
+            notifyParent({ type: 'TERMINAL_READY' });
+
+            addLog('system', 'TERMINAL', 'Terminal de depuración iniciada');
+            addLog('system', 'TERMINAL', 'Presiona Ctrl+C+F12 para cerrar');
+        });
+
+        window.addLog = addLog;
+        window.clearTerminalLogs = clearTerminalLogs;
+        window.filterTerminal = filterTerminal;
+        window.copyTerminalLogs = copyTerminalLogs;
+        window.closeTerminal = closeTerminal;
+    </script>
+</body>
+</html>

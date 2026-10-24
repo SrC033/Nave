@@ -1,0 +1,3 @@
+/* Puedes copiar el main.css base aquí y adaptarlo si quieres */
+body { background: #07101F; color: #EAF0FA; font-family: 'Inter', sans-serif; padding: 20px; }
+.card { background: #0E1A2C; border: 1px solid rgba(125,150,195,.16); border-radius: 14px; padding: 20px; }

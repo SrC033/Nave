@@ -1,0 +1,84 @@
+:root{
+  --bg:#07101F; --card:#0E1A2C; --line:rgba(125,150,195,.16); --line2:rgba(125,150,195,.30);
+  --white:#EAF0FA; --mist:#A3B3CD; --dim:#71859F; --teal:#2DD4BF; --amber:#FBBF24; --red:#F87171; --green:#34D399;
+  --disp:'Sora',system-ui,sans-serif; --body:'Inter',system-ui,sans-serif;
+  --r:14px; --r2:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:var(--bg); color:var(--white); font-family:var(--body);
+  font-size:14px; line-height:1.55; padding:24px;
+  overflow-y:auto; overflow-x:hidden; height:100%;
+  -webkit-font-smoothing:antialiased;
+}
+::-webkit-scrollbar{width:8px;height:0}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(125,150,195,.22);border-radius:8px}
+::-webkit-scrollbar-thumb:hover{background:rgba(45,212,191,.55)}
+
+.ph{display:block;padding:0 0 20px;}
+.ph h1{font-family:var(--disp);font-size:24px;font-weight:700;letter-spacing:-.02em;}
+.ph p{margin-top:4px;font-size:13.5px;color:var(--mist);}
+
+.card{
+  background:var(--card); border:1px solid var(--line);
+  border-radius:var(--r); padding:20px; margin-bottom:16px;
+}
+.card h3{
+  font-family:var(--disp); font-size:15px; font-weight:600;
+  margin-bottom:16px; color:var(--white);
+}
+
+/* Tarjeta de Plan */
+.plan-card{
+  display:flex; justify-content:space-between; align-items:flex-start; gap:20px;
+  flex-wrap:wrap; margin-bottom:16px;
+}
+.plan-left { min-width:0; }
+.plan-right { text-align:right; flex:none; }
+@media(max-width:600px){
+  .plan-card { flex-direction:column; }
+  .plan-right { text-align:left; }
+}
+.chip{
+  display:inline-flex; align-items:center; gap:5px;
+  border:1px solid var(--line); border-radius:999px;
+  padding:4px 10px; font-size:11px; font-weight:600;
+}
+.chip.tl{color:var(--teal); border-color:rgba(45,212,191,.3); background:rgba(45,212,191,.08);}
+.plan-title{font-family:var(--disp); font-size:24px; font-weight:700; margin-top:8px; color:var(--white);}
+.plan-desc{font-size:13px; color:var(--mist); margin-top:4px; line-height:1.5;}
+.plan-price{font-family:var(--disp); font-size:28px; font-weight:700; color:var(--white);}
+.plan-price small{font-size:14px; font-weight:500; color:var(--dim);}
+
+/* Tabla de Facturas */
+table{width:100%; border-collapse:collapse;}
+th{
+  text-align:left; font-size:11px; font-weight:600; color:var(--dim);
+  text-transform:uppercase; letter-spacing:.05em;
+  padding:10px 12px; border-bottom:1px solid var(--line);
+}
+td{padding:14px 12px; border-bottom:1px solid rgba(125,150,195,.09); font-size:13px;}
+tr:last-child td{border-bottom:0;}
+.badge{font-size:11px; padding:3px 8px; border-radius:6px; font-weight:600;}
+.badge.gr{background:rgba(52,211,153,.1); color:var(--green);}
+.badge.rd{background:rgba(248,113,113,.1); color:var(--red);}
+
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:6px;
+  padding:9px 16px; border-radius:var(--r2); font-size:13px; font-weight:600;
+  cursor:pointer; transition:.15s; font-family:inherit; border:1px solid var(--line);
+  background:rgba(255,255,255,.03); color:var(--white);
+}
+.btn:hover{border-color:var(--line2); background:rgba(255,255,255,.06);}
+.btn.outline{background:transparent; color:var(--white);}
+.btn svg{width:14px; height:14px; stroke:currentColor; fill:none; stroke-width:2;}
+
+#toast{
+  position:fixed; left:50%; bottom:24px; transform:translate(-50%, 16px);
+  background:#0F2036; border:1px solid rgba(125,150,195,.3);
+  border-radius:999px; padding:10px 18px; font-size:13px; font-weight:500;
+  color:var(--white); opacity:0; pointer-events:none; transition:.24s;
+  box-shadow:0 10px 34px rgba(3,8,18,.45); z-index:999;
+}
+#toast.on{opacity:1; transform:translate(-50%, 0);}

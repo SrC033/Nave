@@ -1,0 +1,73 @@
+:root{
+  --bg:#07101F; --card:#0E1A2C; --line:rgba(125,150,195,.16); --line2:rgba(125,150,195,.30);
+  --white:#EAF0FA; --mist:#A3B3CD; --dim:#71859F; --teal:#2DD4BF; --red:#F87171; --amber:#FBBF24;
+  --disp:'Sora',system-ui,sans-serif; --body:'Inter',system-ui,sans-serif;
+  --r:14px; --r2:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:var(--bg); color:var(--white); font-family:var(--body);
+  font-size:14px; line-height:1.55; padding:24px;
+  overflow-y:auto; overflow-x:hidden; height:100%;
+  -webkit-font-smoothing:antialiased;
+}
+::-webkit-scrollbar{width:8px;height:0}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(125,150,195,.22);border-radius:8px}
+::-webkit-scrollbar-thumb:hover{background:rgba(45,212,191,.55)}
+
+.ph{display:block;padding:0 0 20px;}
+.ph h1{font-family:var(--disp);font-size:24px;font-weight:700;letter-spacing:-.02em;}
+.ph p{margin-top:4px;font-size:13.5px;color:var(--mist);}
+
+.card{
+  background:var(--card); border:1px solid var(--line);
+  border-radius:var(--r); padding:20px; margin-bottom:16px;
+}
+.card h3{
+  font-family:var(--disp); font-size:15px; font-weight:600;
+  margin-bottom:14px; color:var(--white);
+}
+
+/* Zona de Peligro */
+.card.danger{
+  border-color: rgba(248,113,113,.35);
+  background: rgba(248,113,113,.03);
+}
+.card.danger h3{
+  color: var(--red); display:flex; align-items:center; gap:8px;
+}
+.card.danger h3 svg{width:18px; height:18px; stroke:currentColor; fill:none; stroke-width:2;}
+.card.danger p{font-size:13px; color:var(--mist); margin-bottom:16px;}
+
+.danger-row{
+  display:flex; align-items:center; justify-content:space-between;
+  gap:14px; flex-wrap:wrap;
+  padding:16px 0; border-top:1px solid rgba(248,113,113,.2);
+}
+.danger-row:first-of-type{border-top:0; padding-top:0;}
+.danger-row:last-child{padding-bottom:0;}
+.danger-row .txt{min-width:0;}
+.danger-row b{display:block; font-size:13.5px; color:var(--white); font-weight:600;}
+.danger-row small{display:block; font-size:12px; color:var(--dim); margin-top:2px; line-height:1.4;}
+
+/* Botones */
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:6px;
+  padding:9px 16px; border-radius:var(--r2); font-size:13px; font-weight:600;
+  cursor:pointer; transition:.15s; font-family:inherit; border:1px solid var(--line);
+  background:rgba(255,255,255,.03); color:var(--white);
+}
+.btn:hover{border-color:var(--line2); background:rgba(255,255,255,.06);}
+.btn.d{background:rgba(248,113,113,.1); border-color:rgba(248,113,113,.4); color:var(--red);}
+.btn.d:hover{background:rgba(248,113,113,.2);}
+.btn svg{width:14px; height:14px; stroke:currentColor; fill:none; stroke-width:2;}
+
+#toast{
+  position:fixed; left:50%; bottom:24px; transform:translate(-50%, 16px);
+  background:#0F2036; border:1px solid rgba(125,150,195,.3);
+  border-radius:999px; padding:10px 18px; font-size:13px; font-weight:500;
+  color:var(--white); opacity:0; pointer-events:none; transition:.24s;
+  box-shadow:0 10px 34px rgba(3,8,18,.45); z-index:999;
+}
+#toast.on{opacity:1; transform:translate(-50%, 0);}
